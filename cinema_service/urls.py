@@ -5,6 +5,6 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/cinema/", include("cinema.urls", namespace="cinema")),
     path("__debug__/", include("debug_toolbar.urls")),
-    path("api/users/", include("cinema.urls", namespace="users")),
+    path("api/users/", include("user.urls", namespace="users")),
 
 ]

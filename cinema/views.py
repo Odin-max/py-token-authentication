@@ -1,11 +1,11 @@
 from datetime import datetime
 
-from django.db.models import F, Count
+from django.db.models import F, Count, Prefetch
 from rest_framework import viewsets, mixins, permissions
 from rest_framework.pagination import PageNumberPagination
 
 from user.permissions import IsAdminOrIfAuthenticatedReadOnly
-from cinema.models import Genre, Actor, CinemaHall, Movie, MovieSession, Order
+from cinema.models import Genre, Actor, CinemaHall, Movie, MovieSession, Order, Ticket
 
 from cinema.serializers import (
     GenreSerializer,
@@ -125,9 +125,11 @@ class OrderPagination(PageNumberPagination):
 
 class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.prefetch_related(
-        "tickets__movie_session__movie",
-        "tickets__movie_session__cinema_hall"
+    Prefetch(
+        "tickets",
+        queryset=Ticket.objects.select_related("movie_session__movie", "movie_session__cinema_hall")
     )
+)
     serializer_class = OrderSerializer
     pagination_class = OrderPagination
     permission_classes = [permissions.IsAuthenticated]
